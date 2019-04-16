@@ -5,7 +5,7 @@ all: lib/libGM.so
 clean:
 
 docs:
-
+	
 tests:
 	@echo "${TEST}"
 
@@ -17,7 +17,9 @@ help:
 	@echo "\ttests\t- Builds and runs the test suite"
 
 ## Main targets should exist below here
-lib/libGM.so:
+lib:
+	@mkdir lib
+lib/libGM.so: | lib
 
 ## General settings and flags here
 CFLAGS=
