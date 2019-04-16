@@ -5,6 +5,11 @@ all: lib/libGM.so
 clean:
 
 docs:
+ifndef DOXYGEN
+	$(error "Doxygen not installed. Not generating documentation")
+else
+	doxygen
+endif
 	
 tests:
 	@echo "${TEST}"
@@ -25,6 +30,8 @@ lib/libGM.so: | lib
 CFLAGS=
 
 LDFLAGS=
+
+DOXYGEN:= $(shell command -v doxygen 2> /dev/null)
 
 TEST:="Goodbye"
 
