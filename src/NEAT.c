@@ -1,3 +1,3 @@
-#include "greymatter/NEAT.h"
+#include "GreyMatter/NEAT.h"
 
 
