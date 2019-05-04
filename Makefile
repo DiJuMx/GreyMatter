@@ -2,7 +2,7 @@
 CFLAGS := -fPIC
 CFLAGS += -MMD
 CFLAGS += -std=c99
-CFLAGS += -Wall -Werror -Wpedantic
+CFLAGS += -Wall -Wextra -Werror -Wpedantic
 
 LDFLAGS:=
 
