@@ -1,5 +1,17 @@
 .PHONY: all clean tests docs help
 
+## Settings here
+CFLAGS=
+LDFLAGS=
+
+SRCS := src/NEAT.c
+
+OBJS := $(patsubst src/%.c,build/%.o,$(SRCS))
+
+DOXYGEN:= $(shell command -v doxygen 2> /dev/null)
+
+## Targets below
+
 all: lib/libGM.so
 
 clean:
@@ -24,14 +36,9 @@ help:
 ## Main targets should exist below here
 lib:
 	@mkdir lib
-lib/libGM.so: | lib
+lib/libGM.so: $(OBJS) | lib
 
 ## General settings and flags here
-CFLAGS=
-
-LDFLAGS=
-
-DOXYGEN:= $(shell command -v doxygen 2> /dev/null)
 
 TEST:="Goodbye"
 
