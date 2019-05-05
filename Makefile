@@ -13,7 +13,7 @@ BIN_DIR := bin
 DOC_DIR := docs
 
 INC := $(addprefix -I,$(INC_DIR))
-LIB_SRCS := NEAT.c
+LIB_SRCS := NEAT.c perceptron.c
 TST_SRCS := test.c
 
 ALL_SRCS := $(LIB_SRCS) $(TST_SRCS)
