@@ -13,7 +13,7 @@ BIN_DIR := bin
 DOC_DIR := docs
 
 INC := $(addprefix -I,$(INC_DIR))
-LIB_SRCS := NEAT.c perceptron.c
+LIB_SRCS := unit.c perceptron.c NEAT.c
 TST_SRCS := test.c
 
 ALL_SRCS := $(LIB_SRCS) $(TST_SRCS)
@@ -73,7 +73,7 @@ tests: bin/test
 	@echo "Running Tests..."
 	@LD_LIBRARY_PATH=lib ./bin/test
 bin/test: lib/libGM.so $(TST_OBJS) | $(bin_dir)
-	@$(CC) $(CFLAGS) -o $@ $(TST_OBJS) -Llib -lGM
+	@$(CC) $(CFLAGS) -o $@ $(TST_OBJS) -Llib -lGM -lm
 
 help:
 	@echo "Available targets are:"
