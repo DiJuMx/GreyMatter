@@ -2,6 +2,8 @@
 # Edit at https://www.gitignore.io/?templates=c,vim,tags,linux,windows
 
 build/
+lib/
+bin/
 
 ### C ###
 # Prerequisites
