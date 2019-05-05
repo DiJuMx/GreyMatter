@@ -48,11 +48,16 @@ $(BLD_DIR)/%.o: $(SRC_DIR)/%.c | $(bld_dir)
 cleanall: clean cleandep cleandoc
 
 clean:
-	rm -f $(OBJS) lib/libGM.so
+	rm -f $(ALL_OBJS) lib/libGM.so bin/test
 cleandep:
 	rm -f $(DEPS)
 
-$(bld_dir) $(lib_dir) $(bin_dir):
+
+$(bin_dir):
+	@mkdir -p $@
+$(lib_dir):
+	@mkdir -p $@
+$(bld_dir):
 	@mkdir -p $@
 
 docs:
@@ -67,7 +72,6 @@ cleandoc:
 tests: bin/test
 	@echo "Running Tests..."
 	@LD_LIBRARY_PATH=lib ./bin/test
-
 bin/test: lib/libGM.so $(TST_OBJS) | $(bin_dir)
 	@$(CC) $(CFLAGS) -o $@ $(TST_OBJS) -Llib -lGM
 
