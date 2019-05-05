@@ -22,6 +22,14 @@ struct gm_unit {
         void    (*backwardPass)(struct gm_unit*);
 };
 
+/**
+ */
+struct gm_unit * gmCreateUnit(int numInputs, int numOutputs);
+
+/**
+ */
+void gmDestroyUnit(struct gm_unit * unit);
+
 #ifdef __cplusplus
 }
 #endif

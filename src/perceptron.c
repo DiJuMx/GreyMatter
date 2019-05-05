@@ -60,9 +60,10 @@ _return:
 
 void gmDestroyPerceptron(struct gm_unit * unit)
 {
-        if (NULL != unit->model)
-                free(unit->model);
-        if (NULL != unit)
-                free(unit);
+        if (NULL != unit) {
+                if (NULL != unit->model)
+                        free(unit->model);
+                gmDestroyUnit(unit);
+        }
 }
 
