@@ -3,7 +3,7 @@
 #include "common.h"
 #include "GreyMatter/unit.h"
 
-const float BIAS_F = 1.f;
+float BIAS_F = 1.f;
 
 struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
 {
@@ -38,6 +38,8 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
                 goto _cleanup_dInput;
 
         unit->dInput = malloc(unit->numInputs * sizeof(float));
+
+        unit->input[1] = &BIAS_F;
 
         goto _return;
 
