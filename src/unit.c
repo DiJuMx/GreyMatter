@@ -28,12 +28,30 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
         if (NULL == unit->output)
                 goto _cleanup_input;
 
+        unit->dInput = malloc(unit->numInputs * sizeof(float));
+        if (NULL == unit->dInput)
+                goto _cleanup_output;
+
+        unit->dOutput = malloc(unit->numOutputs * sizeof(float*));
+        if (NULL == unit->output)
+                goto _cleanup_dInput;
+
+        unit->dInput = malloc(unit->numInputs * sizeof(float));
+
         goto _return;
 
+_cleanup_dInput:
+        free(unit->dInput);
+        unit->dInput = NULL;
+_cleanup_output:
+        free(unit->output);
+        unit->output = NULL;
 _cleanup_input:
         free(unit->input);
+        unit->input = NULL;
 _cleanup_unit:
         free(unit);
+        unit = NULL;
 _return:
         return unit;
 }
@@ -41,10 +59,22 @@ _return:
 void gmDestroyUnit(struct gm_unit * unit)
 {
         if (NULL != unit) {
-                if (NULL != unit->input)
+                if (NULL != unit->input) {
                         free(unit->input);
-                if (NULL != unit->output)
+                        unit->input = NULL;
+                }
+                if (NULL != unit->output) {
                         free(unit->output);
+                        unit->output = NULL;
+                }
+                if (NULL != unit->dInput) {
+                        free(unit->dInput);
+                        unit->dInput = NULL;
+                }
+                if (NULL != unit->dOutput) {
+                        free(unit->dOutput);
+                        unit->dOutput = NULL;
+                }
                 free(unit);
         }
 }

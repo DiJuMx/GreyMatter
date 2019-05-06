@@ -16,7 +16,9 @@ struct gm_unit {
         int     numInputs;
         int     numOutputs;
         float   **input;
+        float   *dInput;
         float   *output;
+        float   **dOutput;
         void    *model;
         void    (*forwardPass)(struct gm_unit*);
         void    (*backwardPass)(struct gm_unit*);
