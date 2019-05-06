@@ -4,8 +4,9 @@
 #include "GreyMatter/unit.h"
 
 struct perceptron_data {
-        float * weights;
-        float * dWeights;
+        float *summation;
+        float *weights;
+        float *dWeights;
         float (*act_func)(float);
         float (*deriv_func)(float);
 };
@@ -13,34 +14,60 @@ struct perceptron_data {
 static void forwardPassPerceptron(struct gm_unit * unit)
 {
         int i=0, j=0;
-        float (*activation)(float) = ((struct perceptron_data *) unit->model)->act_func;
-        float *weights =((struct perceptron_data*) unit->model)->weights;
+        struct perceptron_data * model = NULL;
+        float (*activation)(float) = NULL;
+        float *weights = NULL;
+        
+        if (NULL == unit)
+                return;
 
+        model = unit->model;
+        if (NULL == model)
+                return;
+
+        activation = model->act_func;
+        weights = model->weights;
         if (NULL == activation || NULL == weights)
                 return;
 
         for (i = 0; i < unit->numOutputs; i++) {
-                unit->output[i] = 0.f;
+                model->summation[i] = 0.f;
                 for (j = 0; j < unit->numInputs; j++) {
-                     unit->output[i] += *(unit->input[j]) * weights[j + (i*unit->numInputs)];
+                        model->summation[i] += *(unit->input[j]) * weights[j + (i * unit->numInputs)];
                 }
-                unit->output[i] = (*activation)(unit->output[i]);
+                unit->output[i] = (*activation)(model->summation[i]);
         }
 }
 
 static void backwardPassPerceptron(struct gm_unit * unit)
 {
         int i=0, j=0;
-        float (*derivative)(float) = ((struct perceptron_data *) unit->model)->deriv_func;
-        float *weights =((struct perceptron_data*) unit->model)->weights;
+        float temp = 0.f;
+        struct perceptron_data * model = NULL;
+        float (*derivative)(float) = NULL;
+        float *weights = NULL;
+        
+        if (NULL == unit)
+                return;
 
+        model = unit->model;
+        if (NULL == model)
+                return;
+
+        derivative = model->deriv_func;
+        weights = model->weights;
         if (NULL == derivative || NULL == weights)
                 return;
 
-        for (i = 0; i < unit->numInputs; i++) {
-                unit->dInput[i] = 0.f;
-                for (j = 0; j < unit->numOutputs; j++) {
-                        unit->dInput[i] += *(unit->dOutput[j]) * weights[i + (j*unit->numInputs)];
+        for (j = 0; j < unit->numInputs; j++) {
+                unit->dInput[j] = 0.f;
+        }
+
+        for (i = 0; i < unit->numOutputs; i++) {
+                temp = (*derivative)(model->summation[i]) * *(unit->dOutput[i]);
+                for (j = 0; j < unit->numInputs; j++) {
+                        unit->dInput[j] += temp * model->weights[j + (i * unit->numInputs)];
+                        model->dWeights[j + (i * unit->numInputs)] = temp * *(unit->input[j]);
                 }
         }
 }
@@ -74,11 +101,15 @@ int gmCreatePerceptron(struct gm_unit * unit, float (*actFunc)(float), float (*a
         if (NULL == model->dWeights)
                 goto _cleanup_weights;
 
-
+        model->summation = malloc(unit->numOutputs * sizeof(float));
+        if (NULL == model->summation)
+                goto _cleanup_dWeights;
 
         status = 0;
         goto _return;
-
+_cleanup_dWeights:
+        free(model->dWeights);
+        model->dWeights = NULL;
 _cleanup_weights:
         free(model->weights);
         model->weights = NULL;
@@ -91,8 +122,21 @@ _return:
 
 void gmDestroyPerceptron(struct gm_unit * unit)
 {
+        struct perceptron_data * model = NULL;
         if (NULL != unit) {
-                if (NULL != unit->model) {
+                if (NULL != (model = unit->model)) {
+                        if (NULL != model->summation) {
+                                free(model->summation);
+                                model->summation = NULL;
+                        }
+                        if (NULL != model->dWeights) {
+                                free(model->dWeights);
+                                model->dWeights = NULL;
+                        }
+                        if (NULL != model->weights) {
+                                free(model->weights);
+                                model->weights = NULL;
+                        }
                         free(unit->model);
                         unit->model = NULL;
                 }
