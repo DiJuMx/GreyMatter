@@ -37,12 +37,12 @@ DOXYGEN:= $(shell command -v doxygen 2> /dev/null)
 
 all: lib/libGM.so
 
-lib/libGM.so: $(LIB_OBJS) | $(lib_dir)
+lib/libGM.so: $(LIB_OBJS) $(LIB_DIR)
 	@$(CC) $(CFLAGS) -shared -o $@ $^ $(LDFLAGS)
 
 -include $(DEPS)
 
-$(BLD_DIR)/%.o: $(SRC_DIR)/%.c | $(bld_dir)
+$(BLD_DIR)/%.o: $(SRC_DIR)/%.c $(BLD_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@ $(INC)
 
 cleanall: clean cleandep cleandoc
@@ -53,11 +53,7 @@ cleandep:
 	rm -f $(DEPS)
 
 
-$(bin_dir):
-	@mkdir -p $@
-$(lib_dir):
-	@mkdir -p $@
-$(bld_dir):
+$(BIN_DIR) $(LIB_DIR) $(BLD_DIR):
 	@mkdir -p $@
 
 docs:
@@ -72,7 +68,7 @@ cleandoc:
 tests: bin/test
 	@echo "Running Tests..."
 	@LD_LIBRARY_PATH=lib ./bin/test
-bin/test: lib/libGM.so $(TST_OBJS) | $(bin_dir)
+bin/test: lib/libGM.so $(TST_OBJS) $(BIN_DIR)
 	@$(CC) $(CFLAGS) -o $@ $(TST_OBJS) -Llib -lGM -lm
 
 help:
