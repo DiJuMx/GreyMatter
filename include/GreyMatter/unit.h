@@ -24,6 +24,10 @@ struct gm_unit {
         void    (*backwardPass)(struct gm_unit*);
 };
 
+/** Allows all units to have access to a bias value of 1.f.
+ */
+extern const float BIAS_F;
+
 /**
  */
 struct gm_unit * gmCreateUnit(int numInputs, int numOutputs);
