@@ -29,11 +29,11 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
         if (NULL == unit->output)
                 goto _cleanup_input;
 
-        unit->dInput = malloc(unit->numInputs * sizeof(float));
+        unit->dInput = malloc(unit->numInputs * sizeof(float*));
         if (NULL == unit->dInput)
                 goto _cleanup_output;
 
-        unit->dOutput = malloc(unit->numOutputs * sizeof(float*));
+        unit->dOutput = malloc(unit->numOutputs * sizeof(float));
         if (NULL == unit->output)
                 goto _cleanup_dInput;
 

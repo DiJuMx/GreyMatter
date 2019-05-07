@@ -36,6 +36,7 @@ static void forwardPassPerceptron(struct gm_unit * unit)
                         model->summation[i] += *(unit->input[j]) * weights[j + (i * unit->numInputs)];
                 }
                 unit->output[i] = (*activation)(model->summation[i]);
+                unit->dOutput[i] = 0.f;
         }
 }
 
@@ -59,14 +60,10 @@ static void backwardPassPerceptron(struct gm_unit * unit)
         if (NULL == derivative || NULL == weights)
                 return;
 
-        for (j = 0; j < unit->numInputs; j++) {
-                unit->dInput[j] = 0.f;
-        }
-
         for (i = 0; i < unit->numOutputs; i++) {
-                temp = (*derivative)(model->summation[i]) * *(unit->dOutput[i]);
+                temp = (*derivative)(model->summation[i]) * unit->dOutput[i];
                 for (j = 0; j < unit->numInputs; j++) {
-                        unit->dInput[j] += temp * model->weights[j + (i * unit->numInputs)];
+                        *(unit->dInput[j]) += temp * model->weights[j + (i * unit->numInputs)];
                         model->dWeights[j + (i * unit->numInputs)] = temp * *(unit->input[j]);
                 }
         }
