@@ -41,7 +41,7 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
 
         unit->dInput = malloc(unit->numInputs * sizeof(float));
 
-        unit->input[1] = &BIAS_F;
+        unit->input[0] = &BIAS_F;
 
         goto _return;
 
