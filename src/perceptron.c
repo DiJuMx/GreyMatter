@@ -164,8 +164,8 @@ void gmSetPerceptronWeights(struct gm_unit * unit, float *weights)
         if (NULL == model)
             return;
         
-        for (i = 0; i < input->numOutputs; i++) {
-                for (j = 0; j < input->numInputs; j++) {
+        for (i = 0; i < unit->numOutputs; i++) {
+                for (j = 0; j < unit->numInputs; j++) {
                         idx = j + (i * unit->numInputs);
                         model->weights[idx] = weights[idx];
                 }
