@@ -141,3 +141,21 @@ void gmDestroyPerceptron(struct gm_unit * unit)
         }
 }
 
+void gmSetPerceptronWeights(struct gm_unit * unit, float *weights)
+{
+        int i = 0, j = 0, idx = 0;
+        struct perceptron_data * model;
+        if (NULL == unit || NULL == weights)
+            return;
+        
+        model = unit->model;
+        if (NULL == model)
+            return;
+        
+        for (i = 0; i < input->numOutputs; i++) {
+                for (j = 0; j < input->numInputs; j++) {
+                        idx = j + (i * unit->numInputs);
+                        model->weights[idx] = weights[idx];
+                }
+        }
+}

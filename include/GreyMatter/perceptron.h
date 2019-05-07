@@ -18,6 +18,10 @@ int gmCreatePerceptron(struct gm_unit * unit, float (*actFunc)(float), float (*a
  */
 void gmDestroyPerceptron(struct gm_unit * unit);
 
+/**
+ */
+void gmSetPerceptronWeights(struct gm_unit * unit, float *weights);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
