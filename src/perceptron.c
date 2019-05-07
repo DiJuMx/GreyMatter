@@ -3,6 +3,8 @@
 #include "common.h"
 #include "GreyMatter/unit.h"
 
+/**
+ */
 struct perceptron_data {
         float *summation;
         float *weights;
@@ -11,6 +13,8 @@ struct perceptron_data {
         float (*deriv_func)(float);
 };
 
+/**
+ */
 static void forwardPassPerceptron(struct gm_unit * unit)
 {
         int i=0, j=0;
@@ -40,6 +44,8 @@ static void forwardPassPerceptron(struct gm_unit * unit)
         }
 }
 
+/**
+ */
 static void backwardPassPerceptron(struct gm_unit * unit)
 {
         int i=0, j=0;
@@ -71,6 +77,8 @@ static void backwardPassPerceptron(struct gm_unit * unit)
 
 //static void weightUpdatePerceptron(struct gm_unit * unit, int updateMethod);
 
+/**
+ */
 int gmCreatePerceptron(struct gm_unit * unit, float (*actFunc)(float), float (*actDeriv)(float))
 {
         int status = -1;
@@ -117,6 +125,8 @@ _return:
         return status;
 }
 
+/**
+ */
 void gmDestroyPerceptron(struct gm_unit * unit)
 {
         struct perceptron_data * model = NULL;
@@ -141,6 +151,8 @@ void gmDestroyPerceptron(struct gm_unit * unit)
         }
 }
 
+/**
+ */
 void gmSetPerceptronWeights(struct gm_unit * unit, float *weights)
 {
         int i = 0, j = 0, idx = 0;

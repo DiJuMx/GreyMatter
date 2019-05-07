@@ -28,12 +28,8 @@ struct gm_unit {
  */
 extern float BIAS_F;
 
-/**
- */
 struct gm_unit * gmCreateUnit(int numInputs, int numOutputs);
 
-/**
- */
 void gmDestroyUnit(struct gm_unit * unit);
 
 #ifdef __cplusplus

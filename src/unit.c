@@ -5,6 +5,8 @@
 
 float BIAS_F = 1.f;
 
+/**
+ */
 struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
 {
         struct gm_unit * unit = NULL;
@@ -59,6 +61,8 @@ _return:
         return unit;
 }
 
+/**
+ */
 void gmDestroyUnit(struct gm_unit * unit)
 {
         if (NULL != unit) {
