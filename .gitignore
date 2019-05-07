@@ -5,6 +5,8 @@ build/
 lib/
 bin/
 
+.ycm_extra_conf.py
+
 ### C ###
 # Prerequisites
 *.d
