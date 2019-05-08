@@ -11,7 +11,7 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
 {
         struct gm_unit * unit = NULL;
 
-        if (0 > numInputs || 1 > numOutputs)
+        if (1 > numInputs || 1 > numOutputs)
                 goto _return;
         
         unit = malloc(1 * sizeof(*unit));
@@ -19,8 +19,7 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
         if (NULL == unit)
                 goto _return;
 
-        /* One is added to take into account the presence of the bias */
-        unit->numInputs = numInputs + 1;
+        unit->numInputs = numInputs;
         unit->numOutputs = numOutputs;
 
         unit->input = malloc(unit->numInputs * sizeof(float*));
@@ -36,12 +35,8 @@ struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
                 goto _cleanup_output;
 
         unit->dOutput = malloc(unit->numOutputs * sizeof(float));
-        if (NULL == unit->output)
+        if (NULL == unit->dOutput)
                 goto _cleanup_dInput;
-
-        unit->dInput = malloc(unit->numInputs * sizeof(float));
-
-        unit->input[0] = &BIAS_F;
 
         goto _return;
 
