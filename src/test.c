@@ -15,25 +15,19 @@ int main(int argc, char*argv[])
 {
         UNUSED(argc);
         UNUSED(argv);
-        int status = 0; 
 
         float weights[] = {.1f, .5f, .5f};
         float inputs[] = {1.f, 1.f};
 
-        struct gm_unit * layer1 = gmCreateUnit(2, 1);
+        struct gm_unit * layer1 = gmCreatePerceptron(3, 1, tanhf, tanh_deriv);
         if (NULL == layer1){
-                printf("Error creating unit\n");
-                return EXIT_FAILURE;
-        }
-
-        status = gmCreatePerceptron(layer1, tanhf, tanh_deriv);
-        if (-1 == status){
                 printf("Error creating Perceptron\n");
                 return EXIT_FAILURE;
         }
 
         gmSetPerceptronWeights(layer1, weights);
 
+        layer1->input[0] = &BIAS_F;
         layer1->input[1] = &inputs[0];
         layer1->input[2] = &inputs[1];
 

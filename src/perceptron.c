@@ -79,12 +79,17 @@ static void backwardPassPerceptron(struct gm_unit * unit)
 
 /**
  */
-int gmCreatePerceptron(struct gm_unit * unit, float (*actFunc)(float), float (*actDeriv)(float))
+struct gm_unit * gmCreatePerceptron(int numInputs, int numOutputs, float (*actFunc)(float), float (*actDeriv)(float))
 {
-        int status = -1;
+        struct gm_unit *unit = NULL;
         struct perceptron_data *model = NULL;
 
-        if (NULL == actFunc || NULL == actDeriv || NULL == unit)
+        if (1 > numInputs || 1 > numOutputs || NULL == actFunc || NULL == actDeriv)
+                goto _return;
+
+        unit = gmCreateUnit(numInputs, numOutputs);
+
+        if (NULL == unit)
                 goto _return;
 
         unit->forwardPass = &forwardPassPerceptron;
@@ -110,7 +115,6 @@ int gmCreatePerceptron(struct gm_unit * unit, float (*actFunc)(float), float (*a
         if (NULL == model->summation)
                 goto _cleanup_dWeights;
 
-        status = 0;
         goto _return;
 _cleanup_dWeights:
         free(model->dWeights);
@@ -122,7 +126,7 @@ _cleanup_model:
         free(unit->model);
         unit->model = NULL;
 _return:
-        return status;
+        return unit;
 }
 
 /**

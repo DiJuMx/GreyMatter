@@ -10,7 +10,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int gmCreatePerceptron(struct gm_unit * unit, float (*actFunc)(float), float (*actDeriv)(float));
+struct gm_unit * gmCreatePerceptron(int numInputs, int numOutputs, float (*actFunc)(float), float (*actDeriv)(float));
 
 void gmDestroyPerceptron(struct gm_unit * unit);
 
