@@ -41,16 +41,21 @@ struct gm_unit {
 /** @} */
 
 /** \addtogroup ErrCodes Error Codes and Return Values
+ *
+ * Success is always 0. 
  * @{
  */
 #define E_NULLARG       1       /**< A required argument was NULL */
 #define E_UNKNOWNARG    2       /**< A variadic argument is unknown */
 #define E_INVALIDARG    3       /**< A variadic argument is invalid */
+#define E_INVALIDSIZE   4       /**< A supplied size is invalid */
+#define E_MEMORY        5       /**< There was an error allocating space */
 
 /** @} */
-struct gm_unit * gmCreateUnit(int numInputs, int numOutputs);
 
-void gmDestroyUnit(struct gm_unit * unit);
+int gmCreateUnit(struct gm_unit *unit, int numInputs, int numOutputs);
+
+void gmCleanupUnit(struct gm_unit *unit);
 
 #ifdef __cplusplus
 }

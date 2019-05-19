@@ -3,62 +3,58 @@
 #include "common.h"
 #include "GreyMatter/unit.h"
 
-float BIAS_F = 1.f;
-
 /**
  */
-struct gm_unit * gmCreateUnit(int numInputs, int numOutputs)
+int gmCreateUnit(struct gm_unit *unit, int numInputs, int numOutputs)
 {
-        struct gm_unit * unit = NULL;
+        int retCode = 0;
+        int fail = 0;
 
-        if (1 > numInputs || 1 > numOutputs)
+        if (NULL == unit) {
+                retCode = -E_NULLARG;
                 goto _return;
+        }
+
+        /* Ensure we have NULL pointers */
+        unit->input = NULL;
+        unit->dInput = NULL;
+        unit->output = NULL;
+        unit->dOutput = NULL;
+        unit->model = NULL;
         
-        unit = malloc(1 * sizeof(*unit));
-
-        if (NULL == unit)
+        if (0 > numInputs || 1 > numOutputs) {
+                retCode = -E_INVALIDSIZE;
                 goto _return;
+        }
 
+        /* Copy size to structure */
         unit->numInputs = numInputs;
         unit->numOutputs = numOutputs;
 
-        unit->input = malloc(unit->numInputs * sizeof(float*));
-        if (NULL == unit->input)
-                goto _cleanup_unit;
-
+        if (numInputs > 0){
+                unit->input = malloc(unit->numInputs * sizeof(float*));
+                fail |= (NULL == unit->input);
+                unit->dInput = malloc(unit->numInputs * sizeof(float*));
+                fail |= (NULL == unit->dInput);
+        }
         unit->output = malloc(unit->numOutputs * sizeof(float));
-        if (NULL == unit->output)
-                goto _cleanup_input;
-
-        unit->dInput = malloc(unit->numInputs * sizeof(float*));
-        if (NULL == unit->dInput)
-                goto _cleanup_output;
-
+        fail |= (NULL == unit->output);
         unit->dOutput = malloc(unit->numOutputs * sizeof(float));
-        if (NULL == unit->dOutput)
-                goto _cleanup_dInput;
+        fail |= (NULL == unit->dOutput);
 
-        goto _return;
+        /* If any of the allocations fail, cleanup */
+        if (fail) {
+                gmCleanupUnit(unit);
+                retCode = -E_MEMORY;
+        }
 
-_cleanup_dInput:
-        free(unit->dInput);
-        unit->dInput = NULL;
-_cleanup_output:
-        free(unit->output);
-        unit->output = NULL;
-_cleanup_input:
-        free(unit->input);
-        unit->input = NULL;
-_cleanup_unit:
-        free(unit);
-        unit = NULL;
 _return:
-        return unit;
+        return retCode;
 }
 
 /**
  */
-void gmDestroyUnit(struct gm_unit * unit)
+void gmCleanupUnit(struct gm_unit * unit)
 {
         if (NULL != unit) {
                 if (NULL != unit->input) {
@@ -77,7 +73,6 @@ void gmDestroyUnit(struct gm_unit * unit)
                         free(unit->dOutput);
                         unit->dOutput = NULL;
                 }
-                free(unit);
         }
 }
 
