@@ -50,6 +50,8 @@ struct gm_unit {
 #define E_INVALIDARG    3       /**< A variadic argument is invalid */
 #define E_INVALIDSIZE   4       /**< A supplied size is invalid */
 #define E_MEMORY        5       /**< There was an error allocating space */
+#define E_UNINITIALISED 6       /**< There was an attempt to use an uninitialised unit */
+#define E_INITIALISED   7       /**< There was an attempt to initialise an already initialised unit */
 
 /** @} */
 
