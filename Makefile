@@ -66,7 +66,7 @@ else
 	doxygen
 endif
 cleandoc:
-	rm -rf $(DOC_DIR)
+	rm -r $(DOC_DIR)/html
 	
 tests: bin/test
 	@echo "Running Tests..."
