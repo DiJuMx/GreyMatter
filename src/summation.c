@@ -153,10 +153,9 @@ _return:
 
 /**
  */
-int gmCreateSummation(struct gm_unit *unit)
+static int summationCreationCheck(struct gm_unit *unit)
 {
         int retCode = 0;
-
         if (NULL == unit) {
                 retCode = -E_NULLARG;
                 goto _return;
@@ -173,6 +172,20 @@ int gmCreateSummation(struct gm_unit *unit)
                 goto _return;
         }
 
+_return:
+        return retCode;
+
+}
+
+/**
+ */
+int gmCreateSummation(struct gm_unit *unit)
+{
+        int retCode = 0;
+
+        retCode = summationCreationCheck(unit);
+        if (0 > retCode) goto _return;
+
         unit->forwardPass = forwardPassSummation;
         unit->backwardPass = backwardPassSummation;
 
@@ -185,110 +198,116 @@ _return:
 int gmCreateWeightedSummation(struct gm_unit *unit)
 {
         int retCode = 0;
+        struct weighted_summation_data *model = NULL;
 
-        retCode = gmCreateSummation(unit);
-        if (0 > retCode)
+        retCode = summationCreationCheck(unit);
+        if (0 > retCode) goto _return;
+
+        unit->model = malloc(sizeof(struct weighted_summation_data));
+        if (NULL == unit->model) {
+                retCode = -E_MEMORY;
                 goto _return;
+        }
 
+        model = unit->model;
+        model->weights = malloc(unit->numInputs * unit->numOutputs * sizeof(float));
+        if (NULL == model->weights) {
+                retCode = -E_MEMORY;
+                goto _cleanup;
+        }
 
+        model->dWeights = malloc(unit->numInputs * unit->numOutputs * sizeof(float));
+        if (NULL == model->dWeights) {
+                retCode = -E_MEMORY;
+                goto _cleanup;
+        }
+
+        unit->forwardPass = forwardPassWeightedSummation;
+        unit->backwardPass = backwardPassWeightedSummation;
+
+        goto _return;
+
+_cleanup:
+        gmCleanupSummation(unit);
 _return:
         return retCode;
 }
+
 /**
  */
-struct gm_unit * gmCreatePerceptron(int numInputs, int numOutputs, float (*actFunc)(float), float (*actDeriv)(float))
+void gmCleanupSummation(struct gm_unit *unit)
 {
-        struct gm_unit *unit = NULL;
-        struct perceptron_data *model = NULL;
-
-        if (1 > numInputs || 1 > numOutputs || NULL == actFunc || NULL == actDeriv)
-                goto _return;
-
-        unit = gmCreateUnit(numInputs, numOutputs);
-
+        struct weighted_summation_data * model = NULL;
         if (NULL == unit)
-                goto _return;
-
-        unit->forwardPass = &forwardPassPerceptron;
-        unit->backwardPass = &backwardPassPerceptron;
-
-        unit->model = malloc(1 * sizeof(struct perceptron_data));
-        if (NULL == unit->model)
-                goto _return;
+                return;
+        
+        unit->forwardPass = NULL;
+        unit->backwardPass = NULL;
 
         model = unit->model;
-        model->act_func = actFunc;
-        model->deriv_func = actDeriv;
-
-        model->weights = malloc(unit->numInputs * unit->numOutputs * sizeof(float));
-        if (NULL == model->weights)
-                goto _cleanup_model;
-
-        model->dWeights = malloc(unit->numInputs * unit->numOutputs * sizeof(float));
-        if (NULL == model->dWeights)
-                goto _cleanup_weights;
-
-        model->summation = malloc(unit->numOutputs * sizeof(float));
-        if (NULL == model->summation)
-                goto _cleanup_dWeights;
-
-        goto _return;
-_cleanup_dWeights:
-        free(model->dWeights);
-        model->dWeights = NULL;
-_cleanup_weights:
-        free(model->weights);
-        model->weights = NULL;
-_cleanup_model:
-        free(unit->model);
-        unit->model = NULL;
-_return:
-        return unit;
-}
-
-/**
- */
-void gmDestroyPerceptron(struct gm_unit * unit)
-{
-        struct perceptron_data * model = NULL;
-        if (NULL != unit) {
-                if (NULL != (model = unit->model)) {
-                        if (NULL != model->summation) {
-                                free(model->summation);
-                                model->summation = NULL;
-                        }
-                        if (NULL != model->dWeights) {
-                                free(model->dWeights);
-                                model->dWeights = NULL;
-                        }
-                        if (NULL != model->weights) {
-                                free(model->weights);
-                                model->weights = NULL;
-                        }
-                        free(unit->model);
-                        unit->model = NULL;
-                }
-                gmDestroyUnit(unit);
+        if (NULL != model) {
+                if (NULL != model->weights)
+                        free(model->weights);
+                if (NULL != model->dWeights)
+                        free(model->dWeights);
+                model->weights = NULL;
+                model->dWeights = NULL;
+                free(unit->model);
+                unit->model = NULL;
         }
 }
 
 /**
  */
-void gmSetPerceptronWeights(struct gm_unit * unit, float *weights)
+int gmSetSummationWeights(struct gm_unit * unit, float *weights)
 {
+        int retCode = 0;
         int i = 0, j = 0, idx = 0;
-        struct perceptron_data * model;
-        if (NULL == unit || NULL == weights)
-            return;
-        
+        struct weighted_summation_data * model;
+
+        if (NULL == unit || NULL == weights) {
+                retCode = -E_NULLARG;
+                goto _return;
+        }
+
         model = unit->model;
-        if (NULL == model)
-            return;
+        if (NULL == model) {
+                retCode = -E_UNINITIALISED;
+                goto _return;
+        }
         
-        for (i = 0; i < unit->numOutputs; i++) {
-                for (j = 0; j < unit->numInputs; j++) {
-                        idx = j + (i * unit->numInputs);
+        for (j = 0; j < unit->numOutputs; j++) {
+                for (i = 0; i < unit->numInputs; i++) {
+                        idx = i + (j * unit->numOutputs);
                         model->weights[idx] = weights[idx];
                 }
         }
+_return:
+        return retCode;
+}
+
+/**
+ */
+int gmSetSummationWeight(struct gm_unit *unit, int inputIdx, int outputIdx, float weight)
+{
+        int retCode = 0;
+        int idx = 0;
+        struct weighted_summation_data * model;
+
+        if (NULL == unit) {
+                retCode = -E_NULLARG;
+                goto _return;
+        }
+
+        model = unit->model;
+        if (NULL == model) {
+                retCode = -E_UNINITIALISED;
+                goto _return;
+        }
+        
+        idx = inputIdx + (outputIdx * unit->numOutputs);
+        model->weights[idx] = weight;
+
+_return:
+        return retCode;
 }

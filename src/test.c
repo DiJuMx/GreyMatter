@@ -4,7 +4,7 @@
 
 #include "common.h"
 #include "GreyMatter/unit.h"
-#include "GreyMatter/perceptron.h"
+#include "GreyMatter/summation.h"
 
 float tanh_deriv(float x)
 {
@@ -16,36 +16,70 @@ int main(int argc, char*argv[])
         UNUSED(argc);
         UNUSED(argv);
 
-        float weights[] = {.1f, .5f, .5f};
-        float inputs[] = {1.f, 1.f};
+        int status = 0;
 
-        struct gm_unit * layer1 = gmCreatePerceptron(3, 1, tanhf, tanh_deriv);
-        if (NULL == layer1){
-                printf("Error creating Perceptron\n");
+        float weights[] = {.1f, .5f, .5f};
+        float inputs[] = {1.f, 1.f, 1.f};
+
+        struct gm_unit layer1 = {0};
+
+        status = gmCreateUnit(&layer1, 3, 1);
+
+        if (0 > status){
+                printf("Error creating unit -- Err: %d\n", status);
                 return EXIT_FAILURE;
         }
 
-        gmSetPerceptronWeights(layer1, weights);
+        status = gmCreateSummation(&layer1);
+        if (0 > status){
+                printf("Error creating summation -- Err: %d\n", status);
+                return EXIT_FAILURE;
+        }
 
-        layer1->input[0] = &BIAS_F;
-        layer1->input[1] = &inputs[0];
-        layer1->input[2] = &inputs[1];
+        layer1.input[0] = &inputs[0];
+        layer1.input[1] = &inputs[1];
+        layer1.input[2] = &inputs[2];
 
-        layer1->forwardPass(layer1);
+        layer1.forwardPass(&layer1);
 
+        printf("Inputs:  %2.2f %2.2f %2.2f\n", 
+                        inputs[0], inputs[1], inputs[2]);
+        printf("Output:  %2.4f\n", 
+                        layer1.output[0]); 
+        printf("Expect:  %2.4f\n", 
+                        inputs[0] + inputs[1] + inputs[2]);
+
+        gmCleanupSummation(&layer1);
+
+        printf("-------\n");
+
+        status = gmCreateWeightedSummation(&layer1);
+        if (0 > status){
+                printf("Error creating summation -- Err: %d\n", status);
+                return EXIT_FAILURE;
+        }
+
+        status = gmSetSummationWeights(&layer1, weights);
+        if (0 > status){
+                printf("Error setting weights -- Err: %d\n", status);
+                return EXIT_FAILURE;
+        }
+
+        layer1.forwardPass(&layer1);
+
+        printf("Inputs:  %2.2f %2.2f %2.2f\n", 
+                        inputs[0], inputs[1], inputs[2]);
         printf("Weights: %2.2f %2.2f %2.2f\n",  
                         weights[0], weights[1], weights[2]);
-        printf("Inputs:  %2.2f %2.2f %2.2f\n",  
-                        *(layer1->input[0]), *(layer1->input[1]), *(layer1->input[2]));
-        
-        printf("Output:  %2.8f\n",
-                       layer1->output[0]); 
+        printf("Output:  %2.4f\n", 
+                        layer1.output[0]); 
+        printf("Expect:  %2.4f\n", 
+                        inputs[0] * weights[0]
+                        + inputs[1] * weights[1] 
+                        + inputs[2] * weights[2]);
 
-        printf("Expect:  %2.8f\n",
-                        tanhf(
-                                1.0f * weights[0]
-                                + inputs[0] * weights[1]
-                                + inputs[1] * weights[2] ));
+        gmCleanupSummation(&layer1);
+        gmCleanupUnit(&layer1);
 
         return EXIT_SUCCESS;
 }

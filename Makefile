@@ -4,6 +4,9 @@ CFLAGS += -MMD
 CFLAGS += -std=c99
 CFLAGS += -Wall -Wextra -Werror -Wpedantic
 
+# To be removed for release builds
+CFLAGS += -g
+
 LDFLAGS:=
 
 INC_DIR := include
@@ -13,7 +16,7 @@ BIN_DIR := bin
 DOC_DIR := docs
 
 INC := $(addprefix -I,$(INC_DIR))
-LIB_SRCS := unit.c perceptron.c NEAT.c
+LIB_SRCS := unit.c summation.c NEAT.c
 TST_SRCS := test.c
 
 ALL_SRCS := $(LIB_SRCS) $(TST_SRCS)
@@ -68,6 +71,8 @@ cleandoc:
 tests: bin/test
 	@echo "Running Tests..."
 	@LD_LIBRARY_PATH=lib ./bin/test
+debug: bin/test
+	@LD_LIBRARY_PATH=lib gdb ./bin/test
 bin/test: lib/libGM.so $(TST_OBJS) $(BIN_DIR)
 	@$(CC) $(CFLAGS) -o $@ $(TST_OBJS) -Llib -lGM -lm
 
