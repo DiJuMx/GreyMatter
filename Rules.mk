@@ -9,7 +9,7 @@ dir := lib
 include $(dir)/Rules.mk
 dir := src
 include $(dir)/Rules.mk
-dir := test
+dir := tests
 include $(dir)/Rules.mk
 
 # Directory independent rules
