@@ -1,9 +1,9 @@
 # Created by https://www.gitignore.io/api/c,vim,tags,linux,windows
 # Edit at https://www.gitignore.io/?templates=c,vim,tags,linux,windows
 
-build/
-lib/
-bin/
+/build
+
+
 
 .ycm_extra_conf.py
 

@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "common.h"
 #include "GreyMatter/unit.h"
 #include "GreyMatter/summation.h"
+
+#define UNUSED(x) ((void)(x))
 
 float tanh_deriv(float x)
 {
