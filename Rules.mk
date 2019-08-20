@@ -11,6 +11,8 @@ dir := src
 include $(dir)/Rules.mk
 dir := tests
 include $(dir)/Rules.mk
+dir := docs
+include $(dir)/Rules.mk
 
 # Directory independent rules
 %.o:	%.c
