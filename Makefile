@@ -14,8 +14,8 @@ LL_ALL =
 
 
 # Build tools
-CC 		= gcc
-INST 		= install
+CC 		?= gcc
+INST 		?= install
 COMP 		= $(CC) $(CF_ALL) $(CF_TGT) -o $@ -c $<
 LINK 		= $(CC) $(LF_ALL) $(LF_TGT) -o $@ $^ $(LL_TGT) $(LL_ALL)
 COMPLINK 	= $(CC) $(CF_ALL) $(CF_TGT) $(LF_ALL) $(LF_TGT) -o $@ $< $(LL_TGT) $(LL_ALL)
