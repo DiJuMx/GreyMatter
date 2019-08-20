@@ -1,6 +1,6 @@
 # Clear and reset suffix list
 .SUFFIXES:		#Clear
-#.SUFFIXES: .c .o	#Reset
+.SUFFIXES: .c .o	#Reset
 
 all: 	targets
 
@@ -30,6 +30,9 @@ targets:	$(TGT_BIN) $(TGT_SBIN) $(TGT_ETC) $(TGT_LIB)
 
 .PHONY:		tests
 tests:		$(TGT_TEST)
+
+.PHONY:		docs
+docs:		$(TGT_DOCS)
 
 .PHONY:		clean
 clean:

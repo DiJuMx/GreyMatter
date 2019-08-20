@@ -28,9 +28,9 @@ CLEAN		:= $(CLEAN) $(TGTS_$(d)) $(OBJS_$(d)) $(DEPS_$(d))
 # Local Rules
 $(TGTS_$(d)):	| $(d)/Rules.mk
 
-$(TGTS_$(d)):	LF_TGT := -shared
+$(TGTS_$(d)):	private LF_TGT := -shared
 
-$(OBJS_$(d)):	CF_TGT := -fPIC -I$(d)
+$(OBJS_$(d)):	private CF_TGT := -fPIC -I$(d)
 
 $(d)/libGM.so:	$(OBJS_$(d))
 		$(LINK)
