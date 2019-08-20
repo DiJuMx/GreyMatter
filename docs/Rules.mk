@@ -13,6 +13,10 @@ d		:= $(dir)
 #dir 	:= $(d)/sub
 #include $(dir)/Rules.mk
 
+ifeq ($(DOXYGEN),)
+docs:
+	@echo Doxygen is not available. Not generating Documentation
+else
 # Local Variables
 
 # Choose, targets vs objects.
@@ -29,6 +33,8 @@ CLEAN		:= $(CLEAN) $(TGTS_$(d)) $(OBJS_$(d)) $(DEPS_$(d))
 
 # Include auto generated dependencies
 -include 	$(DEPS_$(d))
+
+endif
 
 # Pop stack
 d	:= $(dirstack_$(sp))
