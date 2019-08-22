@@ -1,0 +1,12 @@
+language: c
+compiler:
+        - gcc
+        - clang
+
+dist:
+        - bionic
+        - xenial
+        - trusty
+        - precise
+
+script: make && make tests
