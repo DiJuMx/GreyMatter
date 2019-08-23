@@ -1,12 +1,15 @@
-language: c
+language: 
+        - c
+
 compiler:
         - gcc
         - clang
 
-dist:
-        - bionic
-        - xenial
-        - trusty
-        - precise
+script: 
+        - make 
+        - make tests
 
-script: make && make tests
+notification:
+        email:
+                on_success: change
+                on_failure: always
